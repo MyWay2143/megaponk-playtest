@@ -29,7 +29,7 @@ canvas{position:absolute;inset:0;display:block;width:100%;height:100%;touch-acti
 <div id="loading"><h1>MegaPonk</h1><span role="status">Загрузка игры…</span><progress max="1" value="0"></progress></div></main>
 <button id="fullscreen" type="button" aria-label="На весь экран" title="На весь экран"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path id="corners" d="M3 9V3h6m6 0h6v6m0 6v6h-6m-6 0H3v-6"/></svg></button>
 <span id="fullscreen-tip" role="status" hidden></span></div>
-<script src="Build/Web.loader.js?v=9f88dd323ba9"></script>
+<script src="Build/Web.loader.js?v=0318260ea19c"></script>
 <script>
 const canvas=document.getElementById("game"), loading=document.getElementById("loading");
 const frame=document.getElementById("screen"), full=document.getElementById("fullscreen"), tip=document.getElementById("fullscreen-tip");
@@ -56,12 +56,12 @@ full.addEventListener("click",async()=>{
 document.addEventListener("fullscreenchange",syncFullscreen);document.addEventListener("webkitfullscreenchange",syncFullscreen);
 // Limit the number of pixels shaded per frame on high-density displays.
 function renderPixelRatio(){
-  const pixelBudget = 1600 * 900;
+  const pixelBudget = 1920 * 1080;
   const pixels = Math.max(1, canvas.clientWidth * canvas.clientHeight);
   return Math.min(window.devicePixelRatio || 1, 2, Math.sqrt(pixelBudget / pixels));
 }
 createUnityInstance(canvas,{
-  dataUrl:"Build/Web.data.unityweb?v=844b1a926616",frameworkUrl:"Build/Web.framework.js.unityweb?v=cd3eb6afc3e7",codeUrl:"Build/Web.wasm.unityweb?v=575289886011",
+  dataUrl:"Build/Web.data.unityweb?v=b75f1f4e2581",frameworkUrl:"Build/Web.framework.js.unityweb?v=f4b9572ccbaf",codeUrl:"Build/Web.wasm.unityweb?v=45341f526908",
   streamingAssetsUrl:"StreamingAssets",companyName:"MegaPonk",productName:"MegaPonk",
   productVersion:"0.1.0",devicePixelRatio:renderPixelRatio(),
   autoSyncPersistentDataPath:true
