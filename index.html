@@ -10,14 +10,9 @@
 <style>
 *{box-sizing:border-box}html,body{margin:0;height:100%;background:#21180f;color:#f4dfbb}
 body{display:grid;place-items:center;font-family:Georgia,serif;overflow:hidden}
-#screen{position:relative;display:grid;place-items:center;width:100vw;height:100dvh;background:#16120f}
-main{width:100%;height:100%;position:relative}
-@media (orientation:landscape){
-  body{background:#0e0c0b}
-  #screen{width:min(100vw,177.77778dvh);height:auto;aspect-ratio:16/9;background:radial-gradient(ellipse at center,#3b2b20,#1c1612 70%)}
-  main{width:auto;max-width:100%;aspect-ratio:9/16}
-}
-canvas{display:block;width:100%;height:100%;touch-action:none;outline:none}
+#screen{position:fixed;inset:0;background:#21180f}
+main{position:absolute;inset:0}
+canvas{position:absolute;inset:0;display:block;width:100%;height:100%;touch-action:none;outline:none}
 #loading{position:absolute;inset:0;display:grid;align-content:center;justify-items:center;gap:1em;text-align:center;padding:1em;background:#21180f}
 #loading[hidden]{display:none}h1{font-size:2.4rem;margin:0}progress{width:65%;accent-color:#c9a158}
 #fullscreen{position:absolute;z-index:2;right:max(8px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));width:42px;height:42px;border:1px solid #bfa273;border-radius:8px;background:#281e17e6;color:#ffe8b9;cursor:pointer;display:grid;place-items:center}
@@ -59,12 +54,19 @@ full.addEventListener("click",async()=>{
   }
 });
 document.addEventListener("fullscreenchange",syncFullscreen);document.addEventListener("webkitfullscreenchange",syncFullscreen);
+// Limit the number of pixels shaded per frame on high-density displays.
+function renderPixelRatio(){
+  const pixelBudget = 1600 * 900;
+  const pixels = Math.max(1, canvas.clientWidth * canvas.clientHeight);
+  return Math.min(window.devicePixelRatio || 1, 2, Math.sqrt(pixelBudget / pixels));
+}
 createUnityInstance(canvas,{
   dataUrl:"Build/Web.data.unityweb?v=844b1a926616",frameworkUrl:"Build/Web.framework.js.unityweb?v=cd3eb6afc3e7",codeUrl:"Build/Web.wasm.unityweb?v=575289886011",
   streamingAssetsUrl:"StreamingAssets",companyName:"MegaPonk",productName:"MegaPonk",
-  productVersion:"0.1.0",devicePixelRatio:Math.min(window.devicePixelRatio||1,2),
+  productVersion:"0.1.0",devicePixelRatio:renderPixelRatio(),
   autoSyncPersistentDataPath:true
-},progress=>{loading.querySelector("progress").value=progress;}).then(()=>{
+},progress=>{loading.querySelector("progress").value=progress;}).then(instance=>{
+  new ResizeObserver(() => { instance.Module.devicePixelRatio = renderPixelRatio(); }).observe(canvas);
   loading.hidden=true;canvas.focus();
 }).catch(error=>{console.error(error);loading.querySelector("span").textContent="Не удалось загрузить игру. Обнови страницу.";});
 </script></body></html>
