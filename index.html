@@ -3,12 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#21180f">
 <title>MegaPonk</title>
 <style>
 *{box-sizing:border-box}html,body{margin:0;height:100%;background:#21180f;color:#f4dfbb}
 body{display:grid;place-items:center;font-family:Georgia,serif;overflow:hidden}
-#screen{display:grid;place-items:center;width:100vw;height:100dvh;background:#16120f}
+#screen{position:relative;display:grid;place-items:center;width:100vw;height:100dvh;background:#16120f}
 main{width:100%;height:100%;position:relative}
 @media (orientation:landscape){
   body{background:#0e0c0b}
@@ -18,14 +20,45 @@ main{width:100%;height:100%;position:relative}
 canvas{display:block;width:100%;height:100%;touch-action:none;outline:none}
 #loading{position:absolute;inset:0;display:grid;align-content:center;justify-items:center;gap:1em;text-align:center;padding:1em;background:#21180f}
 #loading[hidden]{display:none}h1{font-size:2.4rem;margin:0}progress{width:65%;accent-color:#c9a158}
+#fullscreen{position:absolute;z-index:2;right:max(8px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));width:42px;height:42px;border:1px solid #bfa273;border-radius:8px;background:#281e17e6;color:#ffe8b9;cursor:pointer;display:grid;place-items:center}
+#fullscreen svg{width:22px;height:22px}#fullscreen:focus-visible{outline:2px solid #ffe8b9;outline-offset:2px}
+#screen.expanded #fullscreen{opacity:0;transition:opacity .2s}
+#screen.expanded #fullscreen:hover,#screen.expanded #fullscreen:focus-visible{opacity:1}
+#screen.expanded #fullscreen svg{transform:rotate(180deg)}
+#fullscreen-tip{position:absolute;z-index:3;right:8px;bottom:55px;max-width:18rem;padding:.75rem;border-radius:6px;background:#281e17;color:#ffe8b9}
+@media(display-mode:standalone){#fullscreen{display:none}}
 </style>
 </head>
 <body>
 <div id="screen"><main><canvas id="game" tabindex="0" aria-label="MegaPonk"></canvas>
-<div id="loading"><h1>MegaPonk</h1><span role="status">Загрузка игры…</span><progress max="1" value="0"></progress></div></main></div>
+<div id="loading"><h1>MegaPonk</h1><span role="status">Загрузка игры…</span><progress max="1" value="0"></progress></div></main>
+<button id="fullscreen" type="button" aria-label="На весь экран" title="На весь экран"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path id="corners" d="M3 9V3h6m6 0h6v6m0 6v6h-6m-6 0H3v-6"/></svg></button>
+<span id="fullscreen-tip" role="status" hidden></span></div>
 <script src="Build/Web.loader.js?v=9f88dd323ba9"></script>
 <script>
 const canvas=document.getElementById("game"), loading=document.getElementById("loading");
+const frame=document.getElementById("screen"), full=document.getElementById("fullscreen"), tip=document.getElementById("fullscreen-tip");
+function syncFullscreen(){
+  const on=Boolean(document.fullscreenElement||document.webkitFullscreenElement);
+  frame.classList.toggle("expanded",on);
+  const label=on?"Выйти из полного экрана":"На весь экран";
+  full.title=label;full.setAttribute("aria-label",label);full.setAttribute("aria-pressed",String(on));
+  document.getElementById("corners").setAttribute("d",on?"M9 3v6H3m12-6v6h6M3 15h6v6m6 0v-6h6":"M3 9V3h6m6 0h6v6m0 6v6h-6m-6 0H3v-6");
+}
+full.addEventListener("click",async()=>{
+  tip.hidden=true;
+  try{
+    if(document.fullscreenElement||document.webkitFullscreenElement) await (document.exitFullscreen||document.webkitExitFullscreen).call(document);
+    else if(document.documentElement.requestFullscreen) await document.documentElement.requestFullscreen();
+    else if(document.documentElement.webkitRequestFullscreen) document.documentElement.webkitRequestFullscreen();
+    else throw new Error();
+    canvas.focus();
+  }catch{
+    tip.textContent=/iPhone|iPad|iPod/.test(navigator.userAgent)?"Чтобы убрать панели Safari, добавь игру на экран «Домой» через «Поделиться».":"Этот браузер не разрешил полноэкранный режим.";
+    tip.hidden=false;setTimeout(()=>{tip.hidden=true},6000);
+  }
+});
+document.addEventListener("fullscreenchange",syncFullscreen);document.addEventListener("webkitfullscreenchange",syncFullscreen);
 createUnityInstance(canvas,{
   dataUrl:"Build/Web.data.unityweb?v=844b1a926616",frameworkUrl:"Build/Web.framework.js.unityweb?v=cd3eb6afc3e7",codeUrl:"Build/Web.wasm.unityweb?v=575289886011",
   streamingAssetsUrl:"StreamingAssets",companyName:"MegaPonk",productName:"MegaPonk",
