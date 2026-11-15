@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#21180f">
+<title>MegaPonk</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;height:100%;background:#21180f;color:#f4dfbb}
+body{display:grid;place-items:center;font-family:Georgia,serif;overflow:hidden}
+#screen{display:grid;place-items:center;width:100vw;height:100dvh;background:#16120f}
+main{width:100%;height:100%;position:relative}
+@media (orientation:landscape){
+  body{background:#0e0c0b}
+  #screen{width:min(100vw,177.77778dvh);height:auto;aspect-ratio:16/9;background:radial-gradient(ellipse at center,#3b2b20,#1c1612 70%)}
+  main{width:auto;max-width:100%;aspect-ratio:9/16}
+}
+canvas{display:block;width:100%;height:100%;touch-action:none;outline:none}
+#loading{position:absolute;inset:0;display:grid;align-content:center;justify-items:center;gap:1em;text-align:center;padding:1em;background:#21180f}
+#loading[hidden]{display:none}h1{font-size:2.4rem;margin:0}progress{width:65%;accent-color:#c9a158}
+</style>
+</head>
+<body>
+<div id="screen"><main><canvas id="game" tabindex="0" aria-label="MegaPonk"></canvas>
+<div id="loading"><h1>MegaPonk</h1><span role="status">Загрузка игры…</span><progress max="1" value="0"></progress></div></main></div>
+<script src="Build/Web.loader.js?v=9f88dd323ba9"></script>
+<script>
+const canvas=document.getElementById("game"), loading=document.getElementById("loading");
+createUnityInstance(canvas,{
+  dataUrl:"Build/Web.data.unityweb?v=844b1a926616",frameworkUrl:"Build/Web.framework.js.unityweb?v=cd3eb6afc3e7",codeUrl:"Build/Web.wasm.unityweb?v=575289886011",
+  streamingAssetsUrl:"StreamingAssets",companyName:"MegaPonk",productName:"MegaPonk",
+  productVersion:"0.1.0",devicePixelRatio:Math.min(window.devicePixelRatio||1,2),
+  autoSyncPersistentDataPath:true
+},progress=>{loading.querySelector("progress").value=progress;}).then(()=>{
+  loading.hidden=true;canvas.focus();
+}).catch(error=>{console.error(error);loading.querySelector("span").textContent="Не удалось загрузить игру. Обнови страницу.";});
+</script></body></html>
