@@ -27,7 +27,7 @@ vec3 readVerso(vec2 uv){
   float grain=dot(texture(uVerso,tiled).rgb,vec3(.299,.587,.114));
   vec3 p=uInverse*vec3(uv*vec2(540.0,960.0),1.0);vec2 local=p.xy/p.z/vec2(540.0,960.0);
   float edge=min(min(local.x,1.0-local.x),min(local.y,1.0-local.y));
-  vec3 leather=vec3(.035,.115,.075)*(.72+grain*.75);
+  vec3 leather=vec3(.24,.105,.047)*(.72+grain*.75);
   vec3 wood=vec3(.19,.078,.035)*(.65+grain*.65);
   vec3 back=mix(wood,leather,smoothstep(.025,.048,edge));
   float trim=1.0-smoothstep(.0015,.004,abs(edge-.037));
