@@ -29,7 +29,7 @@ canvas{position:absolute;inset:0;display:block;width:100%;height:100%;touch-acti
 <div id="loading"><h1>MegaPonk</h1><span role="status">Загрузка игры…</span><progress max="1" value="0"></progress></div></main>
 <button id="fullscreen" type="button" aria-label="На весь экран" title="На весь экран"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path id="corners" d="M3 9V3h6m6 0h6v6m0 6v6h-6m-6 0H3v-6"/></svg></button>
 <span id="fullscreen-tip" role="status" hidden></span></div>
-<script src="Build/Web.loader.js?v=c4507fe4f723"></script>
+<script src="Build/Web.loader.js?v=14559c95f3b2"></script>
 <script>
 const canvas=document.getElementById("game"), loading=document.getElementById("loading");
 const frame=document.getElementById("screen"), full=document.getElementById("fullscreen"), tip=document.getElementById("fullscreen-tip");
@@ -61,7 +61,7 @@ function renderPixelRatio(){
   return Math.min(window.devicePixelRatio || 1, 2, Math.max(1, Math.sqrt(pixelBudget / pixels)));
 }
 createUnityInstance(canvas,{
-  dataUrl:"Build/Web.data.unityweb?v=6a073ddf9733",frameworkUrl:"Build/Web.framework.js.unityweb?v=84ca59a95bfb",codeUrl:"Build/Web.wasm.unityweb?v=7e05dc458222",
+  dataUrl:"Build/Web.data.unityweb?v=fae4da9492b0",frameworkUrl:"Build/Web.framework.js.unityweb?v=a2c31e460549",codeUrl:"Build/Web.wasm.unityweb?v=7413f4df6a04",
   streamingAssetsUrl:"StreamingAssets",companyName:"MegaPonk",productName:"MegaPonk",
   productVersion:"0.1.0",devicePixelRatio:renderPixelRatio(),
   autoSyncPersistentDataPath:true
