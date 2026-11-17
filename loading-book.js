@@ -33,7 +33,13 @@ vec3 readVerso(vec2 uv){
   float trim=1.0-smoothstep(.0015,.004,abs(edge-.037));
   return mix(back,vec3(.47,.29,.10)*(.7+grain*.3),trim*.7);
 }
-float paperCoverage(vec2 uv){if(any(lessThan(uv,vec2(0.0)))||any(greaterThan(uv,vec2(1.0))))return 0.0;return texture(uMask,uv).a;}
+// The cover includes its wooden frame. A parchment-leaf mask cuts that frame off.
+float paperCoverage(vec2 uv){
+  vec3 p=uInverse*vec3(uv*vec2(540.0,960.0),1.0);
+  vec2 local=p.xy/p.z/vec2(540.0,960.0);
+  vec2 edge=min(local,1.0-local)*vec2(540.0,960.0);
+  return sat(min(edge.x,edge.y)/max(uMotion.w,1.0)+.5);
+}
 // Inverse projection of a sheet rolling around a diagonal cylinder.
 // All distances use the portrait UI's 540.0 x 960.0 design units.
 vec2 leafPoint(vec2 normal, float crease, float along, float tangent, float lift)
@@ -112,7 +118,7 @@ vec4 atlasCurl(vec2 uv, vec4 fold, vec4 motion)
     if (motion.z > .5)
     {
         // At rest the turned leaf meets the head and foot of the binding. Follow the
-        // painted parchment silhouette there; leave the raised sheet free during the turn.
+        // actual cover silhouette there; leave the raised cover free during the turn.
         float spineSampleX = clamp(45.0 + (35.0 - screen.x) * .85, 45.0, 480.0);
         float spineHeight = paperCoverage(vec2(spineSampleX / size.x, sat(uv.y)));
         return result * mix(1.0, spineHeight, settled);
