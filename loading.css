@@ -2,13 +2,14 @@
 #loading{position:absolute;inset:0;z-index:5;display:grid;place-items:center;padding:0;background:#000;overflow:hidden;isolation:isolate}
 #loading[hidden]{display:none}
 .book-stage{position:relative;width:min(100vw,calc(100dvh * 540 / 960));height:min(100dvh,calc(100vw * 960 / 540));container-type:inline-size}
-.book-hinge{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2;mask-image:linear-gradient(90deg,#000 0 4.3%,#000e 4.6%,transparent 5.25%);-webkit-mask-image:linear-gradient(90deg,#000 0 4.3%,#000e 4.6%,transparent 5.25%)}
+.book-hinge{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2}
 .book-binding{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;pointer-events:none}
 .book-front{position:absolute;inset:0;transform-origin:0 0;overflow:hidden;border-radius:0 2% 1% 0;backface-visibility:hidden}
 .book-front>img{position:absolute;width:105.485%;height:100%;max-width:none;left:-5.485%;pointer-events:none}
 #loading.opening{background:transparent}
 #loading.opening .book-stage{visibility:hidden;z-index:2}
-#loading.opening .book-hinge{visibility:visible}
+#loading.opening .book-hinge{visibility:visible;animation:hinge-settle .82s linear forwards}
+@keyframes hinge-settle{0%,65%{opacity:1}100%{opacity:0}}
 .book-curl{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 .book-meter{position:absolute;left:7.91%;top:80.65%;width:79.01%;height:2.55%;border-radius:999px;overflow:hidden;isolation:isolate}
 .book-meter-fill{height:100%;width:100%;transform:scaleX(0);transform-origin:left;background:linear-gradient(0deg,#b74d05,#ffb926 35%,#ffe290 53%,#ffb224 67%,#cf6708);box-shadow:inset 0 0 5px #fff4b7,2px 0 7px #ffd057;will-change:transform;position:relative}
