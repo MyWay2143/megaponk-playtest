@@ -23,15 +23,18 @@ canvas{position:absolute;inset:0;display:block;width:100%;height:100%;touch-acti
 #fullscreen-tip{position:absolute;z-index:3;right:8px;bottom:55px;max-width:18rem;padding:.75rem;border-radius:6px;background:#281e17;color:#ffe8b9}
 @media(display-mode:standalone){#fullscreen{display:none}}
 </style>
-<link rel="stylesheet" href="loading.css?v=35b9d6ef06b3">
+<link rel="stylesheet" href="loading.css?v=086703965b80">
+<link rel="preload" as="image" href="loading-leaf.png?v=1dc28225fcb3">
+<link rel="preload" as="image" href="loading-verso.jpg?v=8297692d860c">
 </head>
 <body>
 <div id="screen"><main><canvas id="game" tabindex="0" aria-label="MegaPonk"></canvas>
 <section id="nickname-screen" aria-labelledby="nickname-title" hidden><form id="nickname-form"><div class="nickname-ornament">✦</div><h1 id="nickname-title">Как тебя зовут?</h1><p>Твой ник будет виден другим игрокам</p><label for="nickname-input">Имя героя</label><input id="nickname-input" name="nickname" maxlength="16" minlength="2" autocomplete="nickname" spellcheck="false" required aria-describedby="nickname-help"><p id="nickname-help">2–16 букв или цифр. Можно использовать _ и -</p><button type="submit">Продолжить</button></form></section>
-<div id="loading" hidden><div class="book-cover"><img src="loading-cover.jpg?v=4bd39ba5f7fb" alt="MegaPonk — обложка книги" fetchpriority="high"><div class="book-meter" role="progressbar" aria-label="Загрузка игры" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="book-meter-fill"></div></div><span class="book-percent">0%</span></div><div id="loading-error" role="alert" hidden>Не удалось загрузить игру. Проверь соединение и попробуй ещё раз.<button id="loading-retry" type="button">Повторить</button></div></div></main>
+<div id="loading" hidden><div class="book-stage"><img class="book-binding" src="loading-book.jpg?v=a3610bb494fe" alt=""><div class="book-front"><img src="loading-cover.jpg?v=4bd39ba5f7fb" alt="MegaPonk — обложка книги" fetchpriority="high"><div class="book-meter" role="progressbar" aria-label="Загрузка игры" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="book-meter-fill"></div></div><span class="book-percent" aria-label="Загружено 0 процентов">0%</span></div></div><div id="loading-error" role="alert" hidden>Не удалось загрузить игру. Проверь соединение и попробуй ещё раз.<button id="loading-retry" type="button">Повторить</button></div></div></main>
 <button id="fullscreen" type="button" aria-label="На весь экран" title="На весь экран"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path id="corners" d="M3 9V3h6m6 0h6v6m0 6v6h-6m-6 0H3v-6"/></svg></button>
 <span id="fullscreen-tip" role="status" hidden></span></div>
-<script src="loading.js?v=72029cf64adf"></script>
+<script src="loading-book.js?v=86ac951ec08c"></script>
+<script src="loading.js?v=0df983a3257f"></script>
 <script src="Build/Web.loader.js?v=c0da84ef318b"></script>
 <script>
 const canvas=document.getElementById("game"), loading=document.getElementById("loading");
