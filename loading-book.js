@@ -1,6 +1,6 @@
 (() => {
   const stage=document.querySelector('.book-stage'),face=stage.querySelector('.book-front');
-  const quad=[[27,96],[490,72],[542,886],[32,924]],size=[540,960];
+  const quad=[[18,94],[490,72],[542,886],[21,926]],size=[540,960];
   function homography(w,h,q){
     const src=[[0,0],[w,0],[w,h],[0,h]],a=[];
     src.forEach(([x,y],i)=>{const [u,v]=q[i];a.push([x,y,1,0,0,0,-u*x,-u*y,u],[0,0,0,x,y,1,-v*x,-v*y,v])});
