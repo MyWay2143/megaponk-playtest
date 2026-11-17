@@ -23,13 +23,16 @@ canvas{position:absolute;inset:0;display:block;width:100%;height:100%;touch-acti
 #fullscreen-tip{position:absolute;z-index:3;right:8px;bottom:55px;max-width:18rem;padding:.75rem;border-radius:6px;background:#281e17;color:#ffe8b9}
 @media(display-mode:standalone){#fullscreen{display:none}}
 </style>
+<link rel="stylesheet" href="loading.css?v=35b9d6ef06b3">
 </head>
 <body>
 <div id="screen"><main><canvas id="game" tabindex="0" aria-label="MegaPonk"></canvas>
-<div id="loading"><h1>MegaPonk</h1><span role="status">Загрузка игры…</span><progress max="1" value="0"></progress></div></main>
+<section id="nickname-screen" aria-labelledby="nickname-title" hidden><form id="nickname-form"><div class="nickname-ornament">✦</div><h1 id="nickname-title">Как тебя зовут?</h1><p>Твой ник будет виден другим игрокам</p><label for="nickname-input">Имя героя</label><input id="nickname-input" name="nickname" maxlength="16" minlength="2" autocomplete="nickname" spellcheck="false" required aria-describedby="nickname-help"><p id="nickname-help">2–16 букв или цифр. Можно использовать _ и -</p><button type="submit">Продолжить</button></form></section>
+<div id="loading" hidden><div class="book-cover"><img src="loading-cover.jpg?v=4bd39ba5f7fb" alt="MegaPonk — обложка книги" fetchpriority="high"><div class="book-meter" role="progressbar" aria-label="Загрузка игры" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="book-meter-fill"></div></div><span class="book-percent">0%</span></div><div id="loading-error" role="alert" hidden>Не удалось загрузить игру. Проверь соединение и попробуй ещё раз.<button id="loading-retry" type="button">Повторить</button></div></div></main>
 <button id="fullscreen" type="button" aria-label="На весь экран" title="На весь экран"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path id="corners" d="M3 9V3h6m6 0h6v6m0 6v6h-6m-6 0H3v-6"/></svg></button>
 <span id="fullscreen-tip" role="status" hidden></span></div>
-<script src="Build/Web.loader.js?v=14559c95f3b2"></script>
+<script src="loading.js?v=72029cf64adf"></script>
+<script src="Build/Web.loader.js?v=c0da84ef318b"></script>
 <script>
 const canvas=document.getElementById("game"), loading=document.getElementById("loading");
 const frame=document.getElementById("screen"), full=document.getElementById("fullscreen"), tip=document.getElementById("fullscreen-tip");
@@ -60,13 +63,13 @@ function renderPixelRatio(){
   const pixels = Math.max(1, canvas.clientWidth * canvas.clientHeight);
   return Math.min(window.devicePixelRatio || 1, 2, Math.max(1, Math.sqrt(pixelBudget / pixels)));
 }
-createUnityInstance(canvas,{
-  dataUrl:"Build/Web.data.unityweb?v=fae4da9492b0",frameworkUrl:"Build/Web.framework.js.unityweb?v=a2c31e460549",codeUrl:"Build/Web.wasm.unityweb?v=7413f4df6a04",
+window.MegaPonkLoading.beforeLoad(()=>createUnityInstance(canvas,{
+  dataUrl:"Build/Web.data.unityweb?v=db0ff95939d9",frameworkUrl:"Build/Web.framework.js.unityweb?v=37d109b78892",codeUrl:"Build/Web.wasm.unityweb?v=def04a45a3b6",
   streamingAssetsUrl:"StreamingAssets",companyName:"MegaPonk",productName:"MegaPonk",
   productVersion:"0.1.0",devicePixelRatio:renderPixelRatio(),
   autoSyncPersistentDataPath:true
-},progress=>{loading.querySelector("progress").value=progress;}).then(instance=>{
+},progress=>{window.MegaPonkLoading.progress(progress);}).then(instance=>{
   new ResizeObserver(() => { instance.Module.devicePixelRatio = renderPixelRatio(); }).observe(canvas);
-  loading.hidden=true;canvas.focus();
-}).catch(error=>{console.error(error);loading.querySelector("span").textContent="Не удалось загрузить игру. Обнови страницу.";});
+  window.MegaPonkLoading.engineReady();
+}).catch(error=>{console.error(error);window.MegaPonkLoading.fail();}));
 </script></body></html>
