@@ -11,11 +11,11 @@
   function align(){const w=stage.clientWidth,h=stage.clientHeight;if(!w||!h)return;const m=homography(w,h,quad.map(([x,y])=>[x*w/540,y*h/960]));face.style.transform=`matrix3d(${[m[0],m[3],0,m[6],m[1],m[4],0,m[7],0,0,1,0,m[2],m[5],0,1].join(',')})`}
   new ResizeObserver(align).observe(stage);
   function asset(name){return new Promise((resolve,reject)=>{const image=new Image();image.onload=()=>resolve(image);image.onerror=reject;const source=[...document.querySelectorAll('img[src],link[as="image"]')].map(e=>e.src||e.href).find(url=>new URL(url,location.href).pathname.endsWith('/'+name));image.src=source||name})}
-  const assets=Promise.all([asset('loading-cover.jpg'),asset('loading-book.jpg'),asset('loading-leaf.png'),asset('loading-verso.jpg')]);
+  const assets=Promise.all([asset('loading-cover.jpg'),asset('loading-book.jpg'),asset('loading-leaf.png'),asset('loading-verso.jpg'),asset('loading-hinge.png')]);
   // Same cylindrical inverse projection and constants as AtlasPageCurl.hlsl / AtlasPageTurn.SetProgress.
   const fragment=`#version 300 es
 precision highp float;
-uniform sampler2D uPrint,uBook,uMask,uVerso;
+uniform sampler2D uPrint,uBook,uMask,uVerso,uBinding;
 uniform mat3 uInverse;
 uniform vec2 uResolution,uOrigin,uSize;
 uniform vec4 uFold,uMotion;
@@ -128,40 +128,41 @@ vec4 atlasCurl(vec2 uv, vec4 fold, vec4 motion)
     return result;
 }
 
-void main(){vec2 pixel=vec2(gl_FragCoord.x,uResolution.y-gl_FragCoord.y);color=atlasCurl((pixel-uOrigin)/uSize,uFold,uMotion);}
+void main(){vec2 pixel=vec2(gl_FragCoord.x,uResolution.y-gl_FragCoord.y);vec2 uv=(pixel-uOrigin)/uSize;
+color=atlasCurl(uv,uFold,uMotion);
+// Reveal the stationary native binding; never draw a second copy on the sheet.
+float cap=(1.0-smoothstep(.056,.074,uv.x))*texture(uBinding,clamp(uv,0.0,1.0)).a;
+color*=1.0-cap;}
 `;
   function compile(gl,type,source){const shader=gl.createShader(type);gl.shaderSource(shader,source);gl.compileShader(shader);if(!gl.getShaderParameter(shader,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(shader));return shader}
   async function open(root){
     const liveCover=window.MegaPonkCoverLife?.freeze();
     if(matchMedia('(prefers-reduced-motion:reduce)').matches){root.classList.add('opening');return}
-    let canvas,gl,spine;
+    let canvas,gl;
     try{
-      const [cover,book,mask,verso]=await assets;
+      const [cover,book,mask,verso,binding]=await assets;
       const print=document.createElement('canvas');print.width=940;print.height=1674;const c=print.getContext('2d');
       if(liveCover)c.drawImage(liveCover,0,0,940,1674);
       else c.drawImage(cover,cover.width*.052,0,cover.width*.948,cover.height,0,0,940,1674);
       const gradient=c.createLinearGradient(0,1350,0,1393);gradient.addColorStop(0,'#cf6708');gradient.addColorStop(.35,'#ffe290');gradient.addColorStop(1,'#b74d05');c.fillStyle=gradient;c.beginPath();c.roundRect(.0791*940,.8065*1674,.7901*940,.0255*1674,18);c.fill();
       c.fillStyle='#351b09';c.font='bold 60px Georgia';c.textAlign='center';c.textBaseline='middle';c.fillText('100%',(.3354+.2743/2)*940,(.851+.051/2)*1674);
       canvas=document.createElement('canvas');canvas.className='book-curl';root.appendChild(canvas);gl=canvas.getContext('webgl2',{alpha:true,premultipliedAlpha:true,antialias:false});if(!gl)throw Error('No WebGL2');
-      // Only the outer spine stays in front; the flexible leather joint remains below the moving cover.
-      spine=stage.querySelector('.book-hinge').cloneNode();spine.className='book-spine-cap';root.appendChild(spine);
       const program=gl.createProgram();gl.attachShader(program,compile(gl,gl.VERTEX_SHADER,'#version 300 es\nvoid main(){vec2 p=vec2((gl_VertexID<<1)&2,gl_VertexID&2);gl_Position=vec4(p*2.0-1.0,0,1);}'));gl.attachShader(program,compile(gl,gl.FRAGMENT_SHADER,fragment));gl.linkProgram(program);if(!gl.getProgramParameter(program,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(program));gl.useProgram(program);
-      [print,book,mask,verso].forEach((image,index)=>{const texture=gl.createTexture();gl.activeTexture(gl.TEXTURE0+index);gl.bindTexture(gl.TEXTURE_2D,texture);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,image);gl.generateMipmap(gl.TEXTURE_2D);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR_MIPMAP_LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);gl.uniform1i(gl.getUniformLocation(program,['uPrint','uBook','uMask','uVerso'][index]),index)});
+      [print,book,mask,verso,binding].forEach((image,index)=>{const texture=gl.createTexture();gl.activeTexture(gl.TEXTURE0+index);gl.bindTexture(gl.TEXTURE_2D,texture);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,image);gl.generateMipmap(gl.TEXTURE_2D);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR_MIPMAP_LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);gl.uniform1i(gl.getUniformLocation(program,['uPrint','uBook','uMask','uVerso','uBinding'][index]),index)});
       const inv=inverse(homography(540,960,quad));gl.uniformMatrix3fv(gl.getUniformLocation(program,'uInverse'),false,new Float32Array([inv[0],inv[3],inv[6],inv[1],inv[4],inv[7],inv[2],inv[5],inv[8]]));
       const smooth=t=>t*t*(3-2*t),mix=(a,b,t)=>a+(b-a)*t;
       function draw(time){
-        const dpr=Math.min(devicePixelRatio||1,2),rect=stage.getBoundingClientRect();Object.assign(spine.style,{left:rect.left+'px',top:rect.top+'px',width:rect.width+'px',height:rect.height+'px'});canvas.width=Math.round(innerWidth*dpr);canvas.height=Math.round(innerHeight*dpr);gl.viewport(0,0,canvas.width,canvas.height);gl.uniform2f(gl.getUniformLocation(program,'uResolution'),canvas.width,canvas.height);gl.uniform2f(gl.getUniformLocation(program,'uOrigin'),rect.left*dpr,rect.top*dpr);gl.uniform2f(gl.getUniformLocation(program,'uSize'),rect.width*dpr,rect.height*dpr);
-        const t=smooth(time),slope=mix(.325,0,t),length=Math.hypot(1,slope),nx=1/length,ny=slope/length,arc=Math.max(0,Math.sin(t*Math.PI));let radius=540*(.047+.104*Math.pow(arc,.85));radius=mix(radius,13,smooth(Math.max(0,Math.min(1,(t-.75)/.25))));const crease=mix(nx*539+ny*480,18,t);let shadow=smooth(Math.min(1,t/.12))*smooth(Math.min(1,(1-t)/.13));shadow=Math.max(shadow,.35*t);
+        const dpr=Math.min(devicePixelRatio||1,2),rect=stage.getBoundingClientRect();canvas.width=Math.round(innerWidth*dpr);canvas.height=Math.round(innerHeight*dpr);gl.viewport(0,0,canvas.width,canvas.height);gl.uniform2f(gl.getUniformLocation(program,'uResolution'),canvas.width,canvas.height);gl.uniform2f(gl.getUniformLocation(program,'uOrigin'),rect.left*dpr,rect.top*dpr);gl.uniform2f(gl.getUniformLocation(program,'uSize'),rect.width*dpr,rect.height*dpr);
+        const t=smooth(time),slope=mix(.325,0,t),length=Math.hypot(1,slope),nx=1/length,ny=slope/length,arc=Math.max(0,Math.sin(t*Math.PI));let radius=540*(.047+.104*Math.pow(arc,.85));radius=mix(radius,13,smooth(Math.max(0,Math.min(1,(t-.75)/.25))));const crease=mix(nx*539+ny*480,-100,t);let shadow=smooth(Math.min(1,t/.12))*smooth(Math.min(1,(1-t)/.13));shadow=Math.max(shadow,.35*t);
         gl.uniform4f(gl.getUniformLocation(program,'uFold'),nx,ny,radius,crease);gl.uniform4f(gl.getUniformLocation(program,'uMotion'),t,shadow,1,540/(rect.width*dpr));gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT);gl.drawArrays(gl.TRIANGLES,0,3);
       }
       draw(0);root.classList.add('opening');window.MegaPonkBook.draw=draw;
       await new Promise(resolve=>{const begin=performance.now();function frame(now){const t=Math.min(1,(now-begin)/820);draw(t);if(t<1)requestAnimationFrame(frame);else resolve()}requestAnimationFrame(frame)});
-      // Finish the cover first, then hand the stationary spine over to the menu binding.
-      canvas.remove();canvas=null;spine.remove();spine=null;root.dataset.coverOpen='true';
-      await new Promise(resolve=>setTimeout(resolve,300));
-      await stage.querySelector('.book-hinge').animate([{opacity:1},{opacity:0}],{duration:200,fill:'forwards'}).finished;
+      // The same binding is already rendered by Unity. No cross-fade or delayed replacement.
+      // Finish with the cover entirely outside the viewport before releasing the loader.
+      root.dataset.coverOpen='true';
     }catch(error){console.warn('Book opening fallback',error);await root.animate([{opacity:1},{opacity:0}],{duration:350,fill:'forwards'}).finished}
-    finally{if(spine)spine.remove();if(canvas)canvas.remove();if(gl)gl.getExtension('WEBGL_lose_context')?.loseContext()}
+    finally{if(canvas)canvas.remove();if(gl)gl.getExtension('WEBGL_lose_context')?.loseContext()}
   }
   window.MegaPonkBook={align,open};
 })();

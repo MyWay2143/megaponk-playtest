@@ -23,7 +23,7 @@ canvas{position:absolute;inset:0;display:block;width:100%;height:100%;touch-acti
 #fullscreen-tip{position:absolute;z-index:3;right:8px;bottom:55px;max-width:18rem;padding:.75rem;border-radius:6px;background:#281e17;color:#ffe8b9}
 @media(display-mode:standalone){#fullscreen{display:none}}
 </style>
-<link rel="stylesheet" href="loading.css?v=cac3f4a7c6f9">
+<link rel="stylesheet" href="loading.css?v=391e57512bd1">
 <link rel="preload" as="image" href="loading-leaf.png?v=1dc28225fcb3">
 <link rel="preload" as="image" href="loading-verso.jpg?v=8297692d860c">
 </head>
@@ -37,9 +37,9 @@ canvas{position:absolute;inset:0;display:block;width:100%;height:100%;touch-acti
 <link rel="preload" as="image" href="loading-guests.png?v=1486e97e4413">
 <link rel="preload" as="image" href="loading-fire.png?v=38308dc00ae4">
 <script src="loading-life.js?v=04017851dda4"></script>
-<script src="loading-book.js?v=90c49bda4650"></script>
+<script src="loading-book.js?v=3e92eaa35812"></script>
 <script src="loading.js?v=0df983a3257f"></script>
-<script src="Build/Web.loader.js?v=c0da84ef318b"></script>
+<script src="Build/Web.loader.js?v=475c8cf10bf9"></script>
 <script>
 const canvas=document.getElementById("game"), loading=document.getElementById("loading");
 const frame=document.getElementById("screen"), full=document.getElementById("fullscreen"), tip=document.getElementById("fullscreen-tip");
@@ -71,7 +71,7 @@ function renderPixelRatio(){
   return Math.min(window.devicePixelRatio || 1, 2, Math.max(1, Math.sqrt(pixelBudget / pixels)));
 }
 window.MegaPonkLoading.beforeLoad(()=>createUnityInstance(canvas,{
-  dataUrl:"Build/Web.data.unityweb?v=db0ff95939d9",frameworkUrl:"Build/Web.framework.js.unityweb?v=37d109b78892",codeUrl:"Build/Web.wasm.unityweb?v=def04a45a3b6",
+  dataUrl:"Build/Web.data.unityweb?v=a5b4f36fd094",frameworkUrl:"Build/Web.framework.js.unityweb?v=1ec5b22ffddd",codeUrl:"Build/Web.wasm.unityweb?v=f56d536a1a02",
   streamingAssetsUrl:"StreamingAssets",companyName:"MegaPonk",productName:"MegaPonk",
   productVersion:"0.1.0",devicePixelRatio:renderPixelRatio(),
   autoSyncPersistentDataPath:true
