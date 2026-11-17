@@ -126,12 +126,14 @@ void main(){vec2 pixel=vec2(gl_FragCoord.x,uResolution.y-gl_FragCoord.y);color=a
 `;
   function compile(gl,type,source){const shader=gl.createShader(type);gl.shaderSource(shader,source);gl.compileShader(shader);if(!gl.getShaderParameter(shader,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(shader));return shader}
   async function open(root){
+    const liveCover=window.MegaPonkCoverLife?.freeze();
     if(matchMedia('(prefers-reduced-motion:reduce)').matches){root.classList.add('opening');return}
     let canvas,gl;
     try{
       const [cover,book,mask,verso]=await assets;
       const print=document.createElement('canvas');print.width=940;print.height=1674;const c=print.getContext('2d');
-      c.drawImage(cover,cover.width*.052,0,cover.width*.948,cover.height,0,0,940,1674);
+      if(liveCover)c.drawImage(liveCover,0,0,940,1674);
+      else c.drawImage(cover,cover.width*.052,0,cover.width*.948,cover.height,0,0,940,1674);
       const gradient=c.createLinearGradient(0,1350,0,1393);gradient.addColorStop(0,'#cf6708');gradient.addColorStop(.35,'#ffe290');gradient.addColorStop(1,'#b74d05');c.fillStyle=gradient;c.beginPath();c.roundRect(.0791*940,.8065*1674,.7901*940,.0255*1674,18);c.fill();
       c.fillStyle='#351b09';c.font='bold 60px Georgia';c.textAlign='center';c.textBaseline='middle';c.fillText('100%',(.3354+.2743/2)*940,(.851+.051/2)*1674);
       canvas=document.createElement('canvas');canvas.className='book-curl';root.appendChild(canvas);gl=canvas.getContext('webgl2',{alpha:true,premultipliedAlpha:true,antialias:false});if(!gl)throw Error('No WebGL2');
