@@ -23,23 +23,19 @@ canvas{position:absolute;inset:0;display:block;width:100%;height:100%;touch-acti
 #fullscreen-tip{position:absolute;z-index:3;right:8px;bottom:55px;max-width:18rem;padding:.75rem;border-radius:6px;background:#281e17;color:#ffe8b9}
 @media(display-mode:standalone){#fullscreen{display:none}}
 </style>
-<link rel="stylesheet" href="loading.css?v=391e57512bd1">
+<link rel="stylesheet" href="loading.css?v=5ecc34e92fa1">
 <link rel="preload" as="image" href="loading-leaf.png?v=1dc28225fcb3">
-<link rel="preload" as="image" href="loading-verso.jpg?v=8297692d860c">
+<link rel="preload" as="image" href="loading-leather.png?v=3c7becbdb0e6">
 </head>
 <body>
 <div id="screen"><main><canvas id="game" tabindex="0" aria-label="MegaPonk"></canvas>
 <section id="nickname-screen" aria-labelledby="nickname-title" hidden><form id="nickname-form"><div class="nickname-ornament">✦</div><h1 id="nickname-title">Как тебя зовут?</h1><p>Твой ник будет виден другим игрокам</p><label for="nickname-input">Имя героя</label><input id="nickname-input" name="nickname" maxlength="16" minlength="2" autocomplete="nickname" spellcheck="false" required aria-describedby="nickname-help"><p id="nickname-help">2–16 букв или цифр. Можно использовать _ и -</p><button type="submit">Продолжить</button></form></section>
-<div id="loading" hidden><div class="book-stage"><img class="book-hinge" src="loading-hinge.png?v=7c73e7f7e707" alt="" aria-hidden="true"><img class="book-binding" src="loading-book.jpg?v=a3610bb494fe" alt=""><div class="book-front"><img src="loading-cover.jpg?v=4bd39ba5f7fb" alt="MegaPonk — обложка книги" fetchpriority="high"><div class="book-meter" role="progressbar" aria-label="Загрузка игры" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="book-meter-fill"></div></div><span class="book-percent" aria-label="Загружено 0 процентов">0%</span></div></div><div id="loading-error" role="alert" hidden>Не удалось загрузить игру. Проверь соединение и попробуй ещё раз.<button id="loading-retry" type="button">Повторить</button></div></div></main>
+<div id="loading" hidden><div class="book-stage"><img class="book-binding" src="loading-book.jpg?v=a3610bb494fe" alt=""><div class="book-front"><img src="loading-tree.png?v=76cdb0df04bb" alt="MegaPonk — обложка книги" fetchpriority="high"><div class="book-meter" role="progressbar" aria-label="Загрузка игры" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="book-meter-fill"></div></div><span class="book-percent" aria-label="Загружено 0 процентов">0%</span></div></div><div id="loading-error" role="alert" hidden>Не удалось загрузить игру. Проверь соединение и попробуй ещё раз.<button id="loading-retry" type="button">Повторить</button></div></div></main>
 <button id="fullscreen" type="button" aria-label="На весь экран" title="На весь экран"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path id="corners" d="M3 9V3h6m6 0h6v6m0 6v6h-6m-6 0H3v-6"/></svg></button>
 <span id="fullscreen-tip" role="status" hidden></span></div>
-<link rel="preload" as="image" href="loading-clearing.png?v=fd2f8c2b9007">
-<link rel="preload" as="image" href="loading-guests.png?v=1486e97e4413">
-<link rel="preload" as="image" href="loading-fire.png?v=38308dc00ae4">
-<script src="loading-life.js?v=04017851dda4"></script>
-<script src="loading-book.js?v=3e92eaa35812"></script>
+<script src="loading-book.js?v=563690b25657"></script>
 <script src="loading.js?v=0df983a3257f"></script>
-<script src="Build/Web.loader.js?v=475c8cf10bf9"></script>
+<script src="Build/Web.loader.js?v=872935832c02"></script>
 <script>
 const canvas=document.getElementById("game"), loading=document.getElementById("loading");
 const frame=document.getElementById("screen"), full=document.getElementById("fullscreen"), tip=document.getElementById("fullscreen-tip");
@@ -71,7 +67,7 @@ function renderPixelRatio(){
   return Math.min(window.devicePixelRatio || 1, 2, Math.max(1, Math.sqrt(pixelBudget / pixels)));
 }
 window.MegaPonkLoading.beforeLoad(()=>createUnityInstance(canvas,{
-  dataUrl:"Build/Web.data.unityweb?v=a5b4f36fd094",frameworkUrl:"Build/Web.framework.js.unityweb?v=1ec5b22ffddd",codeUrl:"Build/Web.wasm.unityweb?v=f56d536a1a02",
+  dataUrl:"Build/Web.data.unityweb?v=e4766cb26ec5",frameworkUrl:"Build/Web.framework.js.unityweb?v=42f279df4d49",codeUrl:"Build/Web.wasm.unityweb?v=1da90b267ba4",
   streamingAssetsUrl:"StreamingAssets",companyName:"MegaPonk",productName:"MegaPonk",
   productVersion:"0.1.0",devicePixelRatio:renderPixelRatio(),
   autoSyncPersistentDataPath:true

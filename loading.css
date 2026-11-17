@@ -7,15 +7,15 @@
 .book-front{position:absolute;inset:0;transform-origin:0 0;overflow:hidden;border-radius:0 2% 1% 0;backface-visibility:hidden}
 .cover-life{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 .cover-life[hidden]{display:none}
-.book-front>img{position:absolute;width:105.485%;height:100%;max-width:none;left:-5.485%;pointer-events:none}
+.book-front>img{position:absolute;width:100%;height:100%;max-width:none;left:0;pointer-events:none}
 #loading.opening{background:transparent}
 #loading.opening .book-stage{visibility:hidden;z-index:0}
 #loading.opening .book-hinge{visibility:hidden}
 .book-curl{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1}
-.book-meter{position:absolute;left:7.91%;top:80.65%;width:79.01%;height:2.55%;border-radius:999px;overflow:hidden;isolation:isolate}
+.book-meter{position:absolute;left:12.5%;top:80.8%;width:75%;height:2.55%;border-radius:999px;overflow:hidden;isolation:isolate}
 .book-meter-fill{height:100%;width:100%;transform:scaleX(0);transform-origin:left;background:linear-gradient(0deg,#b74d05,#ffb926 35%,#ffe290 53%,#ffb224 67%,#cf6708);box-shadow:inset 0 0 5px #fff4b7,2px 0 7px #ffd057;will-change:transform;position:relative}
 .book-meter-fill:after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(135deg,transparent 0 10px,#fff4 11px,transparent 15px 27px);opacity:.5;animation:loading-gleam 3s linear infinite}
-.book-percent{position:absolute;top:85.1%;left:33.54%;width:27.43%;height:5.1%;display:grid;place-items:center;font-size:0;color:#351b09;font-variant-numeric:tabular-nums;counter-reset:loaded var(--load-percent)}
+.book-percent{position:absolute;top:85.0%;left:37%;width:26%;height:4.8%;display:grid;place-items:center;font-size:0;color:#351b09;font-variant-numeric:tabular-nums;counter-reset:loaded var(--load-percent)}
 .book-percent:after{content:counter(loaded) '%';font:bold 6cqw Georgia,serif}
 #loading-error{position:absolute;left:12%;right:12%;bottom:12%;padding:1em;background:#231811ed;border:1px solid #b99550;border-radius:8px;font:18px Georgia,serif;color:#ffe6bb;z-index:4}
 #loading-error[hidden]{display:none}#loading-error button{display:block;margin:12px auto 0;padding:10px 24px;background:#144c36;color:#ffedbf;border:1px solid #bf9b53;font:inherit;cursor:pointer}
