@@ -35,7 +35,7 @@ canvas{position:absolute;inset:0;display:block;width:100%;height:100%;touch-acti
 <span id="fullscreen-tip" role="status" hidden></span></div>
 <script src="loading-book.js?v=563690b25657"></script>
 <script src="loading.js?v=0df983a3257f"></script>
-<script src="Build/Web.loader.js?v=872935832c02"></script>
+<script src="Build/Web.loader.js?v=97fd596e694b"></script>
 <script>
 const canvas=document.getElementById("game"), loading=document.getElementById("loading");
 const frame=document.getElementById("screen"), full=document.getElementById("fullscreen"), tip=document.getElementById("fullscreen-tip");
@@ -67,7 +67,7 @@ function renderPixelRatio(){
   return Math.min(window.devicePixelRatio || 1, 2, Math.max(1, Math.sqrt(pixelBudget / pixels)));
 }
 window.MegaPonkLoading.beforeLoad(()=>createUnityInstance(canvas,{
-  dataUrl:"Build/Web.data.unityweb?v=e4766cb26ec5",frameworkUrl:"Build/Web.framework.js.unityweb?v=42f279df4d49",codeUrl:"Build/Web.wasm.unityweb?v=1da90b267ba4",
+  dataUrl:"Build/Web.data.unityweb?v=72f351be8882",frameworkUrl:"Build/Web.framework.js.unityweb?v=905cc56b206c",codeUrl:"Build/Web.wasm.unityweb?v=164cef66add6",
   streamingAssetsUrl:"StreamingAssets",companyName:"MegaPonk",productName:"MegaPonk",
   productVersion:"0.1.0",devicePixelRatio:renderPixelRatio(),
   autoSyncPersistentDataPath:true
