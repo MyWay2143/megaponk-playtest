@@ -1,7 +1,6 @@
 (() => {
   const root=document.getElementById('loading'),fill=root.querySelector('.book-meter-fill'),percent=root.querySelector('.book-percent'),meter=root.querySelector('[role=progressbar]');
-  let actual=0,engine=false,menu=false,opening=false,failed=false,booting=false,fillMotion,countMotion,finishStarted=false;
-  const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+  let actual=0,engine=false,menu=false,failed=false,booting=false,fillMotion,countMotion,finishStarted=false;
   function shown(){const matrix=getComputedStyle(fill).transform;return matrix==='none'?0:Math.max(0,Math.min(1,new DOMMatrixReadOnly(matrix).a));}
   function animateTo(target,duration,easing='linear'){
     const from=shown();target=Math.max(from,target);
@@ -28,10 +27,9 @@
   async function reveal(){
     if(!engine||!menu||finishStarted||failed)return;
     finishStarted=true;
-    await animateTo(1,Math.min(3000,Math.max(450,(1-shown())*6500)));
+    await animateTo(1,Math.min(400,Math.max(120,(1-shown())*650)));
     if(failed)return;
     percent.setAttribute('aria-label','Загружено 100 процентов');meter.setAttribute('aria-valuenow','100');
-    await sleep(220);opening=true;
     await window.MegaPonkBook.open(root);
     root.hidden=true;document.getElementById('game').focus();
   }
