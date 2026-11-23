@@ -27,3 +27,8 @@
 .nickname-ornament{font-size:38px;color:#67421d}#nickname-form h1{font-size:clamp(26px,7vw,36px)}#nickname-form p{line-height:1.45}#nickname-form label{display:block;font-size:18px;margin:26px 0 9px}
 #nickname-input{display:block;width:100%;padding:14px 10px;text-align:center;border:2px solid #8b5a24;border-radius:9px;background:#fff0ca;color:#34200d;font:24px Georgia,serif;outline-offset:3px}
 #nickname-help{font-size:14px;min-height:40px}#nickname-form button{width:100%;margin-top:15px;padding:14px 12px;border:3px ridge #dab15a;border-radius:9px;background:linear-gradient(#174a33,#092b20);color:#ffecb4;font:bold 24px Georgia,serif;cursor:pointer}
+
+#battle-loading:not([hidden]){position:absolute;inset:0;z-index:20;display:grid;place-items:center;background:#21140ebd;color:#ffe6ac;font:600 1.3rem Georgia,serif;pointer-events:auto}
+#battle-loading div{padding:1rem 1.5rem;border:1px solid #b89047;border-radius:.55rem;background:#372319;min-width:12rem}
+#battle-loading output{float:right}
+#battle-loading progress{display:block;width:100%;height:.7rem;margin-top:.7rem;accent-color:#eab24c}

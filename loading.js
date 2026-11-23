@@ -1,5 +1,7 @@
 (() => {
   const root=document.getElementById('loading'),fill=root.querySelector('.book-meter-fill'),percent=root.querySelector('.book-percent'),meter=root.querySelector('[role=progressbar]');
+  let menuOpened;
+  const opened = new Promise(resolve => { menuOpened = resolve; });
   let actual=0,engine=false,menu=false,failed=false,booting=false,fillMotion,countMotion,finishStarted=false;
   function shown(){const matrix=getComputedStyle(fill).transform;return matrix==='none'?0:Math.max(0,Math.min(1,new DOMMatrixReadOnly(matrix).a));}
   function animateTo(target,duration,easing='linear'){
@@ -31,7 +33,7 @@
     if(failed)return;
     percent.setAttribute('aria-label','Загружено 100 процентов');meter.setAttribute('aria-valuenow','100');
     await window.MegaPonkBook.open(root);
-    root.hidden=true;document.getElementById('game').focus();
+    root.hidden=true;document.getElementById('game').focus();menuOpened();
   }
   const nameKey='megaponk.nickname';
   const validName=value=>{const n=(value||'').trim().normalize();return n.length>=2&&n.length<=16&&/^[\p{L}\p{Nd}_-]+$/u.test(n)?n:null;};
@@ -63,7 +65,7 @@
     input.focus();form.onsubmit=event=>{event.preventDefault();const name=validName(input.value);if(!name){input.setCustomValidity('Введи от 2 до 16 букв или цифр');input.reportValidity();return}proceed(name)};
     input.oninput=()=>input.setCustomValidity('');
   }
-  window.MegaPonkLoading={beforeLoad,remember,progress,
+  window.MegaPonkLoading={beforeLoad,remember,progress,opened,
     engineReady:()=>{engine=true;progress(1);setTimeout(()=>{if(!menu)window.MegaPonkLoading.fail()},45000);reveal()},
     menuReady:()=>{menu=true;reveal()},
     fail:()=>{failed=true;if(fillMotion)fillMotion.pause();if(countMotion)countMotion.pause();document.getElementById('loading-error').hidden=false;}
