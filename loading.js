@@ -29,10 +29,14 @@
   async function reveal(){
     if(!engine||!menu||finishStarted||failed)return;
     finishStarted=true;
-    await animateTo(1,Math.min(400,Math.max(120,(1-shown())*650)));
-    if(failed)return;
+    if(fillMotion)fillMotion.cancel();
+    if(countMotion)countMotion.cancel();
+    fill.style.transform='scaleX(1)';
+    percent.style.setProperty('--load-percent',100);
+    percent.textContent='100%';
     percent.setAttribute('aria-label','Загружено 100 процентов');meter.setAttribute('aria-valuenow','100');
     await window.MegaPonkBook.open(root);
+    if(failed)return;
     root.hidden=true;document.getElementById('game').focus();menuOpened();
   }
   const nameKey='megaponk.nickname';

@@ -1,6 +1,6 @@
 (() => {
   const stage=document.querySelector('.book-stage'),face=stage.querySelector('.book-front');
-  const quad=[[35,103],[503,93],[516,858],[37,875]],size=[540,960];
+  const quad=[[35,92],[503,92],[519,857],[37,882]];
   function homography(w,h,q){
     const src=[[0,0],[w,0],[w,h],[0,h]],a=[];
     src.forEach(([x,y],i)=>{const [u,v]=q[i];a.push([x,y,1,0,0,0,-u*x,-u*y,u],[0,0,0,x,y,1,-v*x,-v*y,v])});
@@ -8,7 +8,7 @@
     return [...a.map(row=>row[8]),1];
   }
   function inverse(m){const [a,b,c,d,e,f,g,h,i]=m,det=a*(e*i-f*h)-b*(d*i-f*g)+c*(d*h-e*g);return [(e*i-f*h),(c*h-b*i),(b*f-c*e),(f*g-d*i),(a*i-c*g),(c*d-a*f),(d*h-e*g),(b*g-a*h),(a*e-b*d)].map(x=>x/det)}
-  function align(){const w=stage.clientWidth,h=stage.clientHeight;if(!w||!h)return;const m=homography(w,h,quad.map(([x,y])=>[x*w/540,y*h/960]));face.style.transform=`matrix3d(${[m[0],m[3],0,m[6],m[1],m[4],0,m[7],0,0,1,0,m[2],m[5],0,1].join(',')})`}
+  function align(){const {width:w,height:h}=stage.getBoundingClientRect();if(!w||!h)return;const m=homography(w,h,quad.map(([x,y])=>[x*w/540,y*h/960]));face.style.transform=`matrix3d(${[m[0],m[3],0,m[6],m[1],m[4],0,m[7],0,0,1,0,m[2],m[5],0,1].join(',')})`}
   new ResizeObserver(align).observe(stage);
   function asset(name){return new Promise((resolve,reject)=>{const image=new Image();image.onload=()=>resolve(image);image.onerror=reject;const source=[...document.querySelectorAll('img[src],link[as="image"]')].map(e=>e.src||e.href).find(url=>new URL(url,location.href).pathname.endsWith('/'+name));image.src=source||name})}
   const assets=Promise.all([asset('loading-tree.webp'),asset('loading-book.jpg'),asset('loading-leather.webp')]);
@@ -21,7 +21,7 @@ uniform vec2 uResolution,uOrigin,uSize;
 uniform vec4 uFold,uMotion;
 out vec4 color;
 float sat(float x){return clamp(x,0.0,1.0);}vec2 sat(vec2 x){return clamp(x,vec2(0.0),vec2(1.0));}
-vec3 readPrint(vec2 uv,float lod){vec3 p=uInverse*vec3(uv*vec2(540.0,960.0),1.0);vec2 local=p.xy/p.z/vec2(540.0,960.0);if(all(greaterThanEqual(local,vec2(0.0)))&&all(lessThanEqual(local,vec2(1.0))))return textureLod(uPrint,local,lod).rgb;return textureLod(uBook,uv,lod).rgb;}
+vec3 readPrint(vec2 uv,float lod){vec3 p=uInverse*vec3(uv*vec2(540.0,960.0),1.0);vec2 local=p.xy/p.z/vec2(540.0,960.0);if(all(greaterThanEqual(local,vec2(0.0)))&&all(lessThanEqual(local,vec2(1.0))))return texture(uPrint,local,lod).rgb;return textureLod(uBook,uv,lod).rgb;}
 vec3 readVerso(vec2 uv){
   vec2 tiled=1.0-abs(fract(uv*vec2(540.0/512.0,960.0/656.0))*2.0-1.0);
   vec3 leather=texture(uVerso,tiled).rgb;
@@ -32,7 +32,7 @@ vec3 readVerso(vec2 uv){
   float trim=1.0-smoothstep(.0015,.004,abs(edge-.037));
   return mix(back,leather*1.12,trim*.7*(1.0-smoothstep(.80,1.0,uMotion.x)));
 }
-// The cover includes its wooden frame. A parchment-leaf mask cuts that frame off.
+// Printed artwork and the turn use the same registered leaf alpha.
 float movablePaper(vec2 uv){
   vec2 p=uv*vec2(540.,960.);
   float bevel=75.+.82*(p.x-484.);
@@ -42,7 +42,7 @@ float paperCoverage(vec2 uv){
   vec3 p=uInverse*vec3(uv*vec2(540.0,960.0),1.0);
   vec2 local=p.xy/p.z/vec2(540.0,960.0);
   vec2 edge=min(local,1.0-local)*vec2(540.0,960.0);
-  return sat(min(edge.x,edge.y)/max(uMotion.w,1.0)+.5)*movablePaper(uv);
+  return sat(min(edge.x,edge.y)/max(uMotion.w,1.0)+.5)*textureLod(uPrint,local,0.0).a*movablePaper(uv);
 }
 // Inverse projection of a sheet rolling around a diagonal cylinder.
 // All distances use the portrait UI's 540.0 x 960.0 design units.
@@ -124,10 +124,8 @@ vec4 atlasCurl(vec2 uv, vec4 fold, vec4 motion)
         // Shape the settled fold to the actual menu leaf, not the rectangular cover.
         float rimX = 31.0 + .00005 * P.y * P.y;
         float across = sat(screen.x / max(rimX,1.0));
-        float top = 111.0 - 4.0*across;
-        float bottom = 877.0 - 4.0*across;
-        float capRound = 3.0*pow(abs(across*2.0-1.0),4.0);
-        float heightMask = sat(min(screen.y-top-capRound,bottom-screen.y-capRound)/max(pixel,1.0)+.5);
+        float spineX = clamp(45.0 + (35.0-screen.x)*.85,45.0,480.0);
+        float heightMask = paperCoverage(vec2(spineX/540.0,sat(uv.y)));
         result *= mix(1.0,heightMask,settled);
         // A restrained rolled ridge: broad shaded leather, thin lit lip, contact crease.
         float edgeDistance = rimX-screen.x;
@@ -159,7 +157,8 @@ color=atlasCurl(uv,uFold,uMotion)*movablePaper(uv)*mix(1.0,smoothstep(9.0,17.0,u
     let canvas,gl;
     try{
       const [cover,book,verso]=await assets;
-      const print=document.createElement('canvas');print.width=940;print.height=1674;const c=print.getContext('2d');
+      const print=document.createElement('canvas');print.width=cover.naturalWidth;print.height=cover.naturalHeight;const c=print.getContext('2d');
+      c.scale(print.width/940,print.height/1674);
       c.drawImage(cover,0,0,940,1674);
       const gradient=c.createLinearGradient(0,1350,0,1393);gradient.addColorStop(0,'#cf6708');gradient.addColorStop(.35,'#ffe290');gradient.addColorStop(1,'#b74d05');c.fillStyle=gradient;c.beginPath();c.roundRect(.125*940,.808*1674,.75*940,.0255*1674,18);c.fill();
       c.fillStyle='#351b09';c.font='bold 60px Georgia';c.textAlign='center';c.textBaseline='middle';c.fillText('100%',.5*940,(.85+.048/2)*1674);
