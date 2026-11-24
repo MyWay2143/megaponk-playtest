@@ -1,6 +1,6 @@
 (() => {
   const stage=document.querySelector('.book-stage'),face=stage.querySelector('.book-front');
-  const quad=[[18,94],[490,72],[542,886],[21,926]],size=[540,960];
+  const quad=[[35,103],[503,93],[516,858],[37,875]],size=[540,960];
   function homography(w,h,q){
     const src=[[0,0],[w,0],[w,h],[0,h]],a=[];
     src.forEach(([x,y],i)=>{const [u,v]=q[i];a.push([x,y,1,0,0,0,-u*x,-u*y,u],[0,0,0,x,y,1,-v*x,-v*y,v])});
@@ -33,11 +33,16 @@ vec3 readVerso(vec2 uv){
   return mix(back,leather*1.12,trim*.7*(1.0-smoothstep(.80,1.0,uMotion.x)));
 }
 // The cover includes its wooden frame. A parchment-leaf mask cuts that frame off.
+float movablePaper(vec2 uv){
+  vec2 p=uv*vec2(540.,960.);
+  float bevel=75.+.82*(p.x-484.);
+  return 1.-step(484.,p.x)*step(p.x,528.)*step(72.,p.y)*smoothstep(-.6,.6,bevel-p.y);
+}
 float paperCoverage(vec2 uv){
   vec3 p=uInverse*vec3(uv*vec2(540.0,960.0),1.0);
   vec2 local=p.xy/p.z/vec2(540.0,960.0);
   vec2 edge=min(local,1.0-local)*vec2(540.0,960.0);
-  return sat(min(edge.x,edge.y)/max(uMotion.w,1.0)+.5);
+  return sat(min(edge.x,edge.y)/max(uMotion.w,1.0)+.5)*movablePaper(uv);
 }
 // Inverse projection of a sheet rolling around a diagonal cylinder.
 // All distances use the portrait UI's 540.0 x 960.0 design units.
@@ -119,8 +124,8 @@ vec4 atlasCurl(vec2 uv, vec4 fold, vec4 motion)
         // Shape the settled fold to the actual menu leaf, not the rectangular cover.
         float rimX = 31.0 + .00005 * P.y * P.y;
         float across = sat(screen.x / max(rimX,1.0));
-        float top = 117.0 - 8.0*across;
-        float bottom = 914.0 - 5.0*across;
+        float top = 111.0 - 4.0*across;
+        float bottom = 877.0 - 4.0*across;
         float capRound = 3.0*pow(abs(across*2.0-1.0),4.0);
         float heightMask = sat(min(screen.y-top-capRound,bottom-screen.y-capRound)/max(pixel,1.0)+.5);
         result *= mix(1.0,heightMask,settled);
@@ -144,7 +149,7 @@ vec4 atlasCurl(vec2 uv, vec4 fold, vec4 motion)
 }
 
 void main(){vec2 pixel=vec2(gl_FragCoord.x,uResolution.y-gl_FragCoord.y);vec2 uv=(pixel-uOrigin)/uSize;
-color=atlasCurl(uv,uFold,uMotion);
+color=atlasCurl(uv,uFold,uMotion)*movablePaper(uv)*mix(1.0,smoothstep(9.0,17.0,uv.x*540.0),smoothstep(.68,.95,uMotion.x));
 }
 `;
   function compile(gl,type,source){const shader=gl.createShader(type);gl.shaderSource(shader,source);gl.compileShader(shader);if(!gl.getShaderParameter(shader,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(shader));return shader}
@@ -164,6 +169,8 @@ color=atlasCurl(uv,uFold,uMotion);
       const inv=inverse(homography(540,960,quad));gl.uniformMatrix3fv(gl.getUniformLocation(program,'uInverse'),false,new Float32Array([inv[0],inv[3],inv[6],inv[1],inv[4],inv[7],inv[2],inv[5],inv[8]]));
       const smooth=t=>t*t*(3-2*t),mix=(a,b,t)=>a+(b-a)*t;
       function draw(time){
+        // Hand the last curl to the live Unity fold without a one-frame double exposure.
+        canvas.style.opacity=String(1-smooth(Math.min(1,Math.max(0,(time-.84)/.16))));
         const dpr=Math.min(devicePixelRatio||1,2),rect=stage.getBoundingClientRect();const width=Math.round(innerWidth*dpr),height=Math.round(innerHeight*dpr);if(canvas.width!==width)canvas.width=width;if(canvas.height!==height)canvas.height=height;gl.viewport(0,0,canvas.width,canvas.height);gl.uniform2f(gl.getUniformLocation(program,'uResolution'),canvas.width,canvas.height);gl.uniform2f(gl.getUniformLocation(program,'uOrigin'),rect.left*dpr,rect.top*dpr);gl.uniform2f(gl.getUniformLocation(program,'uSize'),rect.width*dpr,rect.height*dpr);
         const t=smooth(time),slope=mix(.325,0,t),length=Math.hypot(1,slope),nx=1/length,ny=slope/length,arc=Math.max(0,Math.sin(t*Math.PI));let radius=540*(.047+.104*Math.pow(arc,.85));radius=mix(radius,13,smooth(Math.max(0,Math.min(1,(t-.75)/.25))));const crease=mix(nx*539+ny*480,18,t);let shadow=smooth(Math.min(1,t/.12))*smooth(Math.min(1,(1-t)/.13));shadow=Math.max(shadow,.35*t);
         gl.uniform4f(gl.getUniformLocation(program,'uFold'),nx,ny,radius,crease);gl.uniform4f(gl.getUniformLocation(program,'uMotion'),t,shadow,1,540/(rect.width*dpr));gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT);gl.drawArrays(gl.TRIANGLES,0,3);
